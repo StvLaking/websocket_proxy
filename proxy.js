@@ -45,5 +45,5 @@ targetConnection.addEventListener('close', () => {
 });
 
 targetConnection.addEventListener('error', (error) => {
-  console.error('WebSocket error:', error);
+  console.error('WebSocket error:', error.message);
 });
