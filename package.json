@@ -2,19 +2,27 @@
   "name": "websocket_proxy",
   "version": "1.0.0",
   "description": "Websocket forwarder msg",
-  "main":"proxy.js",
+  "main": "proxy.js",
   "bin": "proxy.js",
   "scripts": {
     "start": "node proxy.js",
     "build": "pkg . --out-path dist/"
   },
-   "pkg": {
-    "scripts": ["proxy.js","node_modules/reconnecting-websocket/dist/*.js"],
+  "pkg": {
+    "scripts": [
+      "proxy.js",
+      "node_modules/reconnecting-websocket/dist/*.js"
+    ],
     "assets": [
       "node_modules/ws/**/*",
-      "node_modules/reconnecting-websocket/**/*"],
-    "ignore": ["node_modules/reconnecting-websocket/**/*.mjs"],
-    "targets": ["node18-win-x64"]
+      "node_modules/reconnecting-websocket/**/*"
+    ],
+    "ignore": [
+      "node_modules/reconnecting-websocket/dist/*.mjs"
+    ],
+    "targets": [
+      "node18-win-x64"
+    ]
   },
   "keywords": [],
   "author": "steven.fan@lns.maersk.com",

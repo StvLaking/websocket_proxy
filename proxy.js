@@ -2,7 +2,8 @@
 const WebSocket = require('ws');
 const ReconnectingWebSocket = require('reconnecting-websocket');
 
-const targetConnection = new ReconnectingWebSocket('ws://localhost:16888/ks/printer', [], {
+const targetConnection = new ReconnectingWebSocket('ws://127.0.0.1:16888/ks/printer', [], {
+  WebSocket: WebSocket,          // add due to pack exe problem pkg not support node22
   // 重连配置
   reconnectInterval: 1000,       // 初始重连间隔(ms)
   maxReconnectInterval: 60000,   // 最大重连间隔
@@ -44,5 +45,5 @@ targetConnection.addEventListener('close', () => {
 });
 
 targetConnection.addEventListener('error', (error) => {
-  console.error('WebSocket error:', error.type);
+  console.error('WebSocket error:', error);
 });
