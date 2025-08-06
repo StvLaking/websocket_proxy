@@ -6,7 +6,7 @@ const targetConnection = new ReconnectingWebSocket('ws://localhost:16888/ks/prin
   // 重连配置
   reconnectInterval: 1000,       // 初始重连间隔(ms)
   maxReconnectInterval: 60000,   // 最大重连间隔
-  reconnectDecay: 1.5,           // 重连间隔增长因子
+  reconnectDecay: 10,            // 重连间隔增长因子
   maxRetries: Infinity,          // 最大重试次数
   connectionTimeout: 3000        // 连接超时时间
 });
@@ -20,6 +20,7 @@ console.log('proxyServer running at ws://localhost:6888');
 targetConnection.addEventListener('open', () => {
   console.log('Connected to local kuaishou print tool');
 
+  // proxy connection
   proxyServer.on('connection', (client) => {   
     console.log(`New clinet connected`);    
     sourceConnection = client;
@@ -43,6 +44,5 @@ targetConnection.addEventListener('close', () => {
 });
 
 targetConnection.addEventListener('error', (error) => {
-  console.error('WebSocket error:', error);
-
+  console.error('WebSocket error:', error.type);
 });
