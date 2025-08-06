@@ -2,14 +2,14 @@
   "name": "websocket_proxy",
   "version": "1.0.0",
   "description": "Websocket forwarder msg",
-  "main":"server.js",
-  "bin": "server.js",
+  "main":"proxy.js",
+  "bin": "proxy.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node proxy.js",
     "build": "pkg . --out-path dist/"
   },
    "pkg": {
-    "scripts": ["server.js","node_modules/reconnecting-websocket/dist/*.js"],
+    "scripts": ["proxy.js","node_modules/reconnecting-websocket/dist/*.js"],
     "assets": [
       "node_modules/ws/**/*",
       "node_modules/reconnecting-websocket/**/*"],
@@ -24,5 +24,3 @@
     "ws": "^8.18.3"
   }
 }
-
-
