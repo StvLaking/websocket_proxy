@@ -49,19 +49,15 @@ proxyServer.on('connection', (client) => {
   });
 });
 
-
 targetConnection.addEventListener('open', () => {
   console.log('Connected to local kuaishou print tool');
 });
 
 targetConnection.addEventListener('message', (event) => {
   console.log('Received:', event.data);
-  /// check by sessionID 
-  /// sessionIds.get(org_sessionId).send(event.data);
+  /// check source connection by requestID
   const recwsmsg = JSON.parse(event.data);
   sessionIds.get(recwsmsg.requestID).send(event.data);
- 
-  //sourceConnection.send(event.data);  original 
 });
 
 targetConnection.addEventListener('close', () => {
