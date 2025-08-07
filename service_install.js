@@ -7,5 +7,9 @@ const svc = new Service({
   script : "C:\\Users\\stvL\\Documents\\websocket_proxy\\proxy.js"
 });
 
-svc.on('install', () => svc.start());
+svc.on('install', () => {
+  console.log ('KSProxyService installed');
+  svc.start();
+});
+
 svc.install();

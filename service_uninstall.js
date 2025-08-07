@@ -7,9 +7,8 @@ const svc = new Service({
   script : "C:\\Users\\stvL\\Documents\\websocket_proxy\\proxy.js"
 });
 
-svc.on('install', () => svc.start());
-
 svc.on('uninstall', () => {
   console.log ('KSProxyService uninstalled');
 });
+
 svc.uninstall();
