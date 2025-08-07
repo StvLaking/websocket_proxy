@@ -16,34 +16,39 @@ const targetConnection = new ReconnectingWebSocket('ws://127.0.0.1:16888/ks/prin
   connectionTimeout: 3000        // 连接超时时间
 });
 
-let sourceConnection = null;
-
 // 创建代理服务器监听客户端连接
 const proxyServer = new WebSocket.Server({ port: 6888 });
 console.log('proxyServer running at ws://localhost:6888');
 
 // proxy connection
-proxyServer.on('connection', (client) => {   
+proxyServer.on('connection', (client) => {
   const sessionId = uuid.v4();
   sessionIds.set(sessionId, client);
-
-  console.log(client._socket.remotePort);
-
   console.log(`New clinet connected : ${sessionId}`);
-  sourceConnection = client;
 
   // 客户端消息转发到目标服务器
   client.on('message', (data) => {
-    console.log(`Forward msg to kuaishou: ${data}`);
-    targetConnection.send(data.toString('utf8'));      
+    console.log(`received msg from client: ${data}`);
+    // update requestID to trace sourceConnection
+    try {
+      const wsmsg = JSON.parse(data);
+      wsmsg.requestID = sessionId;    
+      //console.log(`Processed requestID: ${wsmsg.requestID}`);
+
+      // Send to target websocket
+      targetConnection.send(JSON.stringify(wsmsg));
+    } catch (err) {
+      console.error('Message update processing failed:', err);
+    }   
+  });
+
+  // proxy clinet close
+  client.on('close',() => {
+    console.log(`clinet disconnected : ${sessionId}`);   
+    sessionIds.delete(sessionId);
   });
 });
 
-// proxy clinet close
-proxyServer.on('close',(client) => {
-  console.log(`clinet disconnected : ${sessionId}`);
-  sessionIds.delete(sessionId);
-});
 
 targetConnection.addEventListener('open', () => {
   console.log('Connected to local kuaishou print tool');
@@ -51,9 +56,12 @@ targetConnection.addEventListener('open', () => {
 
 targetConnection.addEventListener('message', (event) => {
   console.log('Received:', event.data);
-  /// check by ID 
-
-  sourceConnection.send(event.data);
+  /// check by sessionID 
+  /// sessionIds.get(org_sessionId).send(event.data);
+  const recwsmsg = JSON.parse(event.data);
+  sessionIds.get(recwsmsg.requestID).send(event.data);
+ 
+  //sourceConnection.send(event.data);  original 
 });
 
 targetConnection.addEventListener('close', () => {
@@ -61,5 +69,5 @@ targetConnection.addEventListener('close', () => {
 });
 
 targetConnection.addEventListener('error', (error) => {
-  console.error('WebSocket error:', error);
+  console.error('WebSocket error:', error.message);
 });
