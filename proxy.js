@@ -1,23 +1,55 @@
+const fs = require('fs');
 const uuid = require('uuid');
 const WebSocket = require('ws');
 const ReconnectingWebSocket = require('reconnecting-websocket');
-const config = require('./config');
 
-const targetWS_URL = config.targetWS_URL;
-const listenWS_Port = config.listenWS_Port;
+const _CONFIG = require('./config');    //default config.js
+// config.json to overwrite default
+const config = readConfig('config.json'); //extenal config config.js
+
+const listenWS_Port = config.listenWS_Port || _CONFIG.listenWS_Port;
+const targetWS_URL = config.targetWS_URL || _CONFIG.targetWS_URL ;
+const reconnectInterval = config.reconnectInterval || _CONFIG.reconnectInterval ;
+const maxReconnectInterval = config.maxReconnectInterval || _CONFIG.maxReconnectInterval ;
+const reconnectDecay = config.reconnectDecay || _CONFIG.reconnectDecay ;
+const maxRetries = config.maxRetries || _CONFIG.maxRetries ;
+const connectionTimeout = config.connectionTimeout || _CONFIG.connectionTimeout ;
 
 // 存储所有客户端连接
 const sessionIds = new Map();
 
 const targetConnection = new ReconnectingWebSocket(targetWS_URL, [], {
-  WebSocket: WebSocket,          // add due to build package problem, pkg not support node22
+  WebSocket: WebSocket,  // add due to build package problem, pkg not support node22
   // 重连配置
-  reconnectInterval: config.reconnectInterval,       // 初始重连间隔(ms)
-  maxReconnectInterval: config.maxReconnectInterval, // 最大重连间隔
-  reconnectDecay: config.reconnectDecay,             // 重连间隔增长因子
-  maxRetries: config.maxRetries,                     // 最大重试次数
-  connectionTimeout: config.connectionTimeout        // 连接超时时间
+  reconnectInterval:    reconnectInterval,       // 初始重连间隔(ms)
+  maxReconnectInterval: maxReconnectInterval,    // 最大重连间隔
+  reconnectDecay:       reconnectDecay,          // 重连间隔增长因子
+  maxRetries:           maxRetries,              // 最大重试次数
+  connectionTimeout:    connectionTimeout        // 连接超时时间
 });
+
+console.log('==============================================');
+console.log('listenWS_Port:',listenWS_Port);
+console.log('targetWS_URL:',targetWS_URL);
+console.log('reconnectInterval:',reconnectInterval);
+console.log('maxReconnectInterval:',maxReconnectInterval);
+console.log('reconnectDecay:',reconnectDecay);
+console.log('maxRetries:',maxRetries);
+console.log('connectionTimeout:',connectionTimeout);
+console.log('==============================================');
+
+// read config.json
+function readConfig(filePath) {
+  try {  
+    const data = fs.readFileSync(filePath, 'utf8');
+    const config = JSON.parse(data);
+    console.log("readConfig config.json");
+    return config;
+  } catch (err) {
+    console.log("Missing config.json(using default setting)");
+    return JSON.parse('{}');
+  }
+}
 
 /// log time
 function getDateTime() {
