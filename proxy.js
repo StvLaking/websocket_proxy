@@ -1,9 +1,10 @@
 const uuid = require('uuid');
 const WebSocket = require('ws');
 const ReconnectingWebSocket = require('reconnecting-websocket');
+const config = require('./config');
 
-const targetWS_URL = 'ws://127.0.0.1:16888/ks/printer';
-const listenWS_Port = 6888;
+const targetWS_URL = config.targetWS_URL;
+const listenWS_Port = config.listenWS_Port;
 
 // 存储所有客户端连接
 const sessionIds = new Map();
@@ -11,11 +12,11 @@ const sessionIds = new Map();
 const targetConnection = new ReconnectingWebSocket(targetWS_URL, [], {
   WebSocket: WebSocket,          // add due to build package problem, pkg not support node22
   // 重连配置
-  reconnectInterval: 1000,       // 初始重连间隔(ms)
-  maxReconnectInterval: 60000,   // 最大重连间隔
-  reconnectDecay: 10,            // 重连间隔增长因子
-  maxRetries: Infinity,          // 最大重试次数
-  connectionTimeout: 3000        // 连接超时时间
+  reconnectInterval: config.reconnectInterval,       // 初始重连间隔(ms)
+  maxReconnectInterval: config.maxReconnectInterval, // 最大重连间隔
+  reconnectDecay: config.reconnectDecay,             // 重连间隔增长因子
+  maxRetries: config.maxRetries,                     // 最大重试次数
+  connectionTimeout: config.connectionTimeout        // 连接超时时间
 });
 
 /// log time
@@ -74,7 +75,7 @@ proxyServer.on('connection', (client) => {
 });
 
 targetConnection.addEventListener('open', () => {
-  console.log(getDateTime(),'Connected to local websocket service:',targetWS_URL);
+  console.log(getDateTime(),'Connected to target local websocket service:',targetWS_URL);
 });
 
 targetConnection.addEventListener('message', (event,args) => {
@@ -87,9 +88,9 @@ targetConnection.addEventListener('message', (event,args) => {
 });
 
 targetConnection.addEventListener('close', () => {
-  console.log(getDateTime(),'Disconnected, will retry...');
+  console.log(getDateTime(),'Target websocket disconnected, will retry...');
 });
 
 targetConnection.addEventListener('error', (error) => {
-  console.error(getDateTime(),'WebSocket error:', error.message);
+  console.error(getDateTime(),'Target webSocket error:', error.message);
 });

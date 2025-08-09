@@ -2,8 +2,8 @@
 var config = {};
 
 // URL:port
-config.listenPort = 6889;
-config.targetWsUrl = 'ws://127.0.0.1:16888/ks/printer';  //port used for the https_mitm
+config.listenWS_Port = 6888;      //port used for local proxy
+config.targetWS_URL = 'ws://127.0.0.1:16888/ks/printer'; 
 
 // reconnecting setting 
 config.reconnectInterval = 1000;       // 初始重连间隔(1s)
