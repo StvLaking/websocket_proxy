@@ -1,6 +1,6 @@
 # websocket_proxy
 
-this proxy build for forward msg to kuaishou platform websocket service.
+A websocket proxy build for forward msg to kuaishou platform websocket service.
 
 ```bash
 |ClientA <----------------->|       |
@@ -8,8 +8,13 @@ this proxy build for forward msg to kuaishou platform websocket service.
 |ClientB <----------------->|       |
 ```
 
-## nodejs environment
-nodejs v18.20.8
+## Install
+
+You need to setup your Nodejs environment(nodejs v18.20.8), in the project directory:
+```
+git clone https://github.com/sensepost/wsproxy.git
+npm install
+```
 
 ### required package list
 * ws
