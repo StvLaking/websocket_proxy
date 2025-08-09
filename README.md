@@ -23,6 +23,12 @@ npm install
 * Reconnecting-websocket
 * pkg / node-windows(service)
 
+## Usage
+two methods: service or run in nodejs environment.
+```
+node proxy.js
+```
+
 
 ## Planned Features
 - ~~convert console app to win service~~ 
