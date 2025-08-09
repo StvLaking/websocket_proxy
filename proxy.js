@@ -1,12 +1,14 @@
-
 const uuid = require('uuid');
 const WebSocket = require('ws');
 const ReconnectingWebSocket = require('reconnecting-websocket');
 
+const targetWS_URL = 'ws://127.0.0.1:16888/ks/printer';
+const listenWS_Port = 6888;
+
 // 存储所有客户端连接
 const sessionIds = new Map();
 
-const targetConnection = new ReconnectingWebSocket('ws://127.0.0.1:16888/ks/printer', [], {
+const targetConnection = new ReconnectingWebSocket(targetWS_URL, [], {
   WebSocket: WebSocket,          // add due to build package problem, pkg not support node22
   // 重连配置
   reconnectInterval: 1000,       // 初始重连间隔(ms)
@@ -37,8 +39,8 @@ if (args.debug == true){
 };
 
 // 创建代理服务器监听客户端连接
-const proxyServer = new WebSocket.Server({ port: 6888 });
-console.log(getDateTime(),'ProxyServer running at ws://localhost:6888');
+const proxyServer = new WebSocket.Server({ port: listenWS_Port });
+console.log(getDateTime(),'ProxyServer running at ws://localhost:',listenWS_Port);
 
 // proxy connection
 proxyServer.on('connection', (client) => {
@@ -48,14 +50,14 @@ proxyServer.on('connection', (client) => {
 
   // 客户端消息转发到目标服务器
   client.on('message', (data) => {
-     if (args.debug == true){
-       console.log(getDateTime(),`received msg from client: ${data}`);
-     }
+    if (args.debug == true){
+      console.log(getDateTime(),`received msg from client: ${data}`);
+    }
     // update requestID to trace sourceConnection
     try {
       const wsmsg = JSON.parse(data);
       wsmsg.requestID = sessionId;    
-      //console.log(`Processed requestID: ${wsmsg.requestID}`);
+      //console.log(getDateTime(),`Processed requestID: ${wsmsg.requestID}`);
 
       // Send to target websocket
       targetConnection.send(JSON.stringify(wsmsg));
@@ -72,11 +74,11 @@ proxyServer.on('connection', (client) => {
 });
 
 targetConnection.addEventListener('open', () => {
-  console.log(getDateTime(),'Connected to local kuaishou print tool');
+  console.log(getDateTime(),'Connected to local websocket service:',targetWS_URL);
 });
 
 targetConnection.addEventListener('message', (event,args) => {
-  // enhance later for debug
+  // enhance later for debug flag
   //console.log(getDateTime(),'Received:', event.data);
 
   /// check source connection by requestID
