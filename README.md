@@ -11,8 +11,9 @@ A websocket proxy build for forward msg to kuaishou platform websocket service.
 ## Install
 
 You need to setup your Nodejs environment(nodejs v18.20.8), in the project directory:
+
 ```
-git clone https://github.com/sensepost/wsproxy.git
+git clone https://github.com/StvLaking/websocket_proxy.git
 npm install
 ```
 
