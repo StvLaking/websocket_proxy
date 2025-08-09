@@ -24,9 +24,11 @@ npm install
 * pkg / node-windows(service)
 
 ## Usage
-two methods: service or run in nodejs environment.
+two methods: run in nodejs environment / service
 ```
 node proxy.js
+or 
+node service_install.js
 ```
 
 
