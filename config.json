@@ -1,5 +1,5 @@
 {
-	"listenWS_Port":6888,
+	"listenWS_Port": 6888,
 	"targetWS_URL":"ws://127.0.0.1:16888/ks/printer",
 	"reconnectInterval" : 1000,
 	"maxReconnectInterval" : 3600000, 
