@@ -100,16 +100,16 @@ proxyServer.on('connection', (client) => {
       if (targetConnection.readyState == 1){
         targetConnection.send(JSON.stringify(wsmsg));
         if (args.debug == true){
-          console.log(getDateTime(),'received msg forwarded by proxy');
+          console.log(getDateTime(),'Message forwarded by proxy');
         };
       } else {
         sessionIds.get(sessionId).send(JSON.stringify(timeoutmsg));
         if (args.debug == true){
-          console.log(getDateTime(),'received msg dropped by proxy due to target connection not ready');
+          console.log(getDateTime(),'Message dropped by proxy due to target connection not ready');
         }
       }
     } catch (err) {
-      console.error(getDateTime(),'Message update processing failed:', err);
+      console.error(getDateTime(),'Message json processing failed:', err);
     }   
   });
 
