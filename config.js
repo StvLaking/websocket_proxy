@@ -12,4 +12,7 @@ config.reconnectDecay = 1000;          // 重连间隔增长因子(1s)
 config.maxRetries = Infinity;          // 最大重试次数
 config.connectionTimeout = 3000;       // 连接超时时间(3s)
 
+// default message 
+config.timeout_MSG = '{"err":"local websocket connection not open[proxy]"}';
+
 module.exports = config;

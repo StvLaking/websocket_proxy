@@ -14,6 +14,7 @@ const maxReconnectInterval = config.maxReconnectInterval || _CONFIG.maxReconnect
 const reconnectDecay = config.reconnectDecay || _CONFIG.reconnectDecay ;
 const maxRetries = config.maxRetries || _CONFIG.maxRetries ;
 const connectionTimeout = config.connectionTimeout || _CONFIG.connectionTimeout ;
+const timeout_MSG = config.timeout_MSG || _CONFIG.timeout_MSG ;
 
 // 存储所有客户端连接
 const sessionIds = new Map();
@@ -89,11 +90,24 @@ proxyServer.on('connection', (client) => {
     // update requestID to trace sourceConnection
     try {
       const wsmsg = JSON.parse(data);
-      wsmsg.requestID = sessionId;    
+      wsmsg.requestID = sessionId;
       //console.log(getDateTime(),`Processed requestID: ${wsmsg.requestID}`);
 
+      const timeoutmsg = JSON.parse(timeout_MSG);
+      timeoutmsg.taskID = wsmsg.task.taskID;
+
       // Send to target websocket
-      targetConnection.send(JSON.stringify(wsmsg));
+      if (targetConnection.readyState == 1){
+        targetConnection.send(JSON.stringify(wsmsg));
+        if (args.debug == true){
+          console.log(getDateTime(),'received msg forwarded by proxy');
+        };
+      } else {
+        sessionIds.get(sessionId).send(JSON.stringify(timeoutmsg));
+        if (args.debug == true){
+          console.log(getDateTime(),'received msg dropped by proxy due to target connection not ready');
+        }
+      }
     } catch (err) {
       console.error(getDateTime(),'Message update processing failed:', err);
     }   
@@ -110,10 +124,10 @@ targetConnection.addEventListener('open', () => {
   console.log(getDateTime(),'Connected to target local websocket service:',targetWS_URL);
 });
 
-targetConnection.addEventListener('message', (event,args) => {
-  // enhance later for debug flag
-  //console.log(getDateTime(),'Received:', event.data);
-
+targetConnection.addEventListener('message', (event) => {
+  if (args.debug == true){
+    console.log(getDateTime(),'Received:', event.data);
+  }
   /// check source connection by requestID
   const recwsmsg = JSON.parse(event.data);
   sessionIds.get(recwsmsg.requestID).send(event.data);
